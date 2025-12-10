@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dynamic QR Attendance</title>
+<title>QR Attendance</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   body { font-family: Arial; text-align: center; margin-top: 40px; }
@@ -15,37 +15,53 @@
 <p id="code" style="font-size:22px; margin-top:20px;"></p>
 
 <script>
-// أول كود يتحفظ ويستخدم للتسجيل
+
 let firstCode = null;
 
-// رابط الفورم العادي (اكتب رابط الفورم هنا)
+// رابط الفورم
 const formLink = "https://docs.google.com/forms/d/e/1FAIpQLSeSBl8tONDbIeO_kmYMtETqf9jPB1nMi-6mgl6CHtEx80sjXg/viewform";
 
-function generate() {
-    // كود عشوائي جديد للعرض على الشاشة
-    const current = Math.floor(100000 + Math.random() * 900000).toString();
+// كود فاضي للعرض فقط
+function randomDisplayCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
-    // حفظ أول كود فقط
+function generate() {
+
     if (!firstCode) {
-        firstCode = current;
+        // أول كود فعلي للتسجيل
+        firstCode = randomDisplayCode();
+
+        const link = formLink + "?usp=pp_url&entry.0=" + firstCode;
+
+        document.getElementById("qr").innerHTML = "";
+        new QRCode(document.getElementById("qr"), {
+            text: link,
+            width: 200,
+            height: 200
+        });
+
+        document.getElementById("code").textContent = "Code: " + firstCode;
+
+        return;
     }
 
-    document.getElementById("code").textContent = "Code: " + current;
-
-    // كل QR بعد كده يفتح الفورم بنفس أول كود
-    const link = formLink + "?usp=pp_url&entry.0=" + firstCode; // entry.0 مجرد حقل افتراضي
+    // باقي الأكواد للعرض فقط
+    const fake = randomDisplayCode();
 
     document.getElementById("qr").innerHTML = "";
     new QRCode(document.getElementById("qr"), {
-        text: link,
+        text: fake,
         width: 200,
         height: 200
     });
+
+    document.getElementById("code").textContent = "Code: " + fake;
 }
 
-// بدء التوليد
 generate();
 setInterval(generate, 3000);
+
 </script>
 
 </body>
